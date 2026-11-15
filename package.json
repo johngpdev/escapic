@@ -1,0 +1,24 @@
+{
+  "name": "escapic",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm -w @escape/api run dev",
+    "dev:web": "npm -w @escape/web run dev",
+    "build": "npm -w @escape/web run build",
+    "start": "npm -w @escape/api run start",
+    "smoke": "npm -w @escape/api exec -- tsx ../../scripts/smoke.ts",
+    "typecheck": "npm -w @escape/shared run typecheck && npm -w @escape/api run typecheck && npm -w @escape/web run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "playwright": "^1.65.1",
+    "typescript": "^5.7.3"
+  }
+}
