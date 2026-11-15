@@ -22,7 +22,8 @@ interface Store {
   users: Record<string, User>;
 }
 
-const FILE = resolve(process.cwd(), "../../data/users.json");
+const DATA_DIR = process.env.DATA_DIR || resolve(process.cwd(), "../../data");
+const FILE = resolve(DATA_DIR, "users.json");
 let cache: Store | null = null;
 
 function load(): Store {

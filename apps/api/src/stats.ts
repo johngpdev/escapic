@@ -24,7 +24,8 @@ interface Store {
   locations: Record<string, LocationRecord>;
 }
 
-const FILE = resolve(process.cwd(), "../../data/stats.json");
+const DATA_DIR = process.env.DATA_DIR || resolve(process.cwd(), "../../data");
+const FILE = resolve(DATA_DIR, "stats.json");
 let cache: Store | null = null;
 
 function load(): Store {
