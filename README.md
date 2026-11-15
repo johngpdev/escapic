@@ -1,5 +1,9 @@
 # EscaPic
 
+**Play it now: [escape-io-production-7b184c8d.up.railway.app](https://escape-io-production-7b184c8d.up.railway.app)**
+
+Turn any room into a party game. Read the riddle, photograph what it describes, and the AI judge decides whether you found it. Faster answers score more; three misses ends your round.
+
 Point your phone at a room. Photograph three things in it. Each one is holding a clue.
 
 Mobile-first PWA, no install, no accounts, no database. One Vite/React frontend, one Hono
