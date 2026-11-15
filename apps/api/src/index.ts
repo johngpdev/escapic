@@ -66,6 +66,41 @@ app.get("/api/health", (c) =>
   }),
 );
 
+/** Coordinates are unreadable. Reverse-geocode to a city name, cached. */
+const geoCache = new Map<string, string>();
+
+app.get("/api/geo/reverse", async (c) => {
+  const lat = Number(c.req.query("lat"));
+  const lon = Number(c.req.query("lon"));
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return c.json({ label: "" }, 400);
+
+  const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+  const hit = geoCache.get(key);
+  if (hit) return c.json({ label: hit });
+
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&lat=${lat}&lon=${lon}`,
+      {
+        headers: { "user-agent": "EscaPic/1.0 (hackathon demo)" },
+        signal: AbortSignal.timeout(6000),
+      },
+    );
+    const body = (await res.json()) as {
+      address?: Record<string, string>;
+      name?: string;
+    };
+    const a = body.address ?? {};
+    const label =
+      a.city || a.town || a.village || a.suburb || a.county || a.state || a.country || body.name || "";
+    if (label) geoCache.set(key, label);
+    return c.json({ label });
+  } catch (e) {
+    console.warn(`[geo] reverse failed: ${e instanceof Error ? e.message : e}`);
+    return c.json({ label: "" });
+  }
+});
+
 const AuthBody = z.object({
   name: z.string().min(2).max(12),
   password: z.string().min(4).max(72),

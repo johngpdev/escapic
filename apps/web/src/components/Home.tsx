@@ -83,10 +83,21 @@ export function Home({
     if (!navigator.geolocation) return;
     const id = window.setTimeout(() => {
       navigator.geolocation.getCurrentPosition(
-        (p) =>
-          setLocation((prev) =>
-            prev ? prev : `${p.coords.latitude.toFixed(2)}, ${p.coords.longitude.toFixed(2)}`,
-          ),
+        (p) => {
+          const lat = p.coords.latitude;
+          const lon = p.coords.longitude;
+          void fetch(`/api/geo/reverse?lat=${lat}&lon=${lon}`, {
+            signal: AbortSignal.timeout(8000),
+          })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((b: { label?: string } | null) => {
+              const label = b?.label?.trim();
+              setLocation((prev) => prev || (label ? label : `${lat.toFixed(2)}, ${lon.toFixed(2)}`));
+            })
+            .catch(() =>
+              setLocation((prev) => prev || `${lat.toFixed(2)}, ${lon.toFixed(2)}`),
+            );
+        },
         () => undefined,
         { timeout: 6000, maximumAge: 600000 },
       );
